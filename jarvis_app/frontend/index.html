@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JARVIS - System Control</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>JARVIS</h1>
+            <div id="status-indicator" class="online">SYSTEM ONLINE</div>
+        </header>
+
+        <main id="chat-container">
+            <div id="chat-history"></div>
+        </main>
+
+        <footer>
+            <div class="input-area">
+                <input type="text" id="user-input" placeholder="Give a command..." autocomplete="off">
+                <button id="send-btn">SEND</button>
+                <button id="voice-btn">🎤</button>
+            </div>
+        </footer>
+    </div>
+    <script src="app.js"></script>
+</body>
+</html>

@@ -1,0 +1,7 @@
+fastapi
+uvicorn
+pyautogui
+sqlalchemy
+pydantic
+pytest
+requests
