@@ -1,0 +1,3 @@
+## 2025-05-22 - [Optimizing Local LLM Latency]
+**Learning:** In a local AI assistant architecture where the backend frequently polls or sends requests to a local LLM API (like Ollama), the overhead of establishing new HTTP connections for every request becomes a measurable bottleneck. Reusing connections via `requests.Session()` significantly reduces the latency of the "thinking" phase. Additionally, pre-compiling regular expressions for parsing AI responses avoids redundant computation in the main loop.
+**Action:** Always use connection pooling (e.g., `requests.Session` or `httpx.AsyncClient`) when interfacing with local or remote APIs that are called repeatedly. Pre-compile regex patterns that are used for every LLM response.

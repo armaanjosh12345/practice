@@ -1,12 +1,18 @@
 import sqlite3
 import json
 import requests
+import re
 
 class Brain:
+    # Pre-compiled regex for action parsing to improve performance
+    ACTION_PATTERN = re.compile(r'\{.*\}', re.DOTALL)
+
     def __init__(self, db_path="jarvis_memory.db", llm_url="http://localhost:11434/api/generate"):
         self.db_path = db_path
         self.llm_url = llm_url
         self._init_db()
+        # Use requests.Session for connection pooling to improve LLM request performance
+        self.session = requests.Session()
 
     def _init_db(self):
         conn = sqlite3.connect(self.db_path)
@@ -77,8 +83,8 @@ class Brain:
         prompt = f"{system_prompt}\n\nRecent History:\n{history_str}\nUser: {user_input}\nJarvis:"
 
         try:
-            # Assuming Ollama is running locally
-            response = requests.post(self.llm_url, json={
+            # Using session for faster concurrent requests and connection reuse
+            response = self.session.post(self.llm_url, json={
                 "model": "llama3",
                 "prompt": prompt,
                 "stream": False
@@ -97,9 +103,8 @@ class Brain:
 
     def parse_action(self, ai_reply):
         try:
-            # Try to find JSON in the response
-            import re
-            json_match = re.search(r'\{.*\}', ai_reply, re.DOTALL)
+            # Try to find JSON in the response using the pre-compiled pattern
+            json_match = self.ACTION_PATTERN.search(ai_reply)
             if json_match:
                 return json.loads(json_match.group())
         except:
