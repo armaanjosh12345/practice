@@ -1,7 +1,8 @@
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
-from .brain import Brain
-from .system_controller import SystemController
+from brain import Brain
+from system_controller import SystemController
+from system_info import get_system_stats
 import uvicorn
 
 app = FastAPI()
@@ -18,8 +19,12 @@ async def root():
 @app.post("/chat")
 async def chat(message: Message):
     try:
-        # 1. AI thinks
-        reply = brain.think(message.text)
+        # Get system context
+        stats = get_system_stats()
+        context_msg = f" [System Context: CPU {stats['cpu_usage']}, RAM {stats['memory_usage']}, Battery {stats['battery']}]"
+
+        # 1. AI thinks with system context
+        reply = brain.think(message.text + context_msg)
 
         # 2. Check if there's a system action
         action_data = brain.parse_action(reply)

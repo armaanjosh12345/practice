@@ -6,8 +6,8 @@ import os
 # Mock pyautogui before importing SystemController
 sys.modules['pyautogui'] = MagicMock()
 
-from jarvis_app.backend.system_controller import SystemController
-from jarvis_app.backend.brain import Brain
+from system_controller import SystemController
+from brain import Brain
 
 def test_system_controller_move_mouse():
     import pyautogui

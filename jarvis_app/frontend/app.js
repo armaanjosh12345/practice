@@ -52,19 +52,36 @@ const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecogni
 if (SpeechRecognition) {
     const recognition = new SpeechRecognition();
     recognition.lang = 'en-US';
+    recognition.continuous = false; // We use false for better control with UI
+
+    let isListening = false;
 
     voiceBtn.addEventListener('click', () => {
-        recognition.start();
-        voiceBtn.style.background = 'red';
+        if (!isListening) {
+            recognition.start();
+            isListening = true;
+            voiceBtn.style.background = 'red';
+        } else {
+            recognition.stop();
+            isListening = false;
+            voiceBtn.style.background = '#00e5ff';
+        }
     });
 
     recognition.onresult = (event) => {
         const transcript = event.results[0][0].transcript;
         sendMessage(transcript);
+        isListening = false;
         voiceBtn.style.background = '#00e5ff';
     };
 
     recognition.onerror = () => {
+        isListening = false;
+        voiceBtn.style.background = '#00e5ff';
+    };
+
+    recognition.onend = () => {
+        isListening = false;
         voiceBtn.style.background = '#00e5ff';
     };
 } else {
@@ -80,3 +97,12 @@ function speak(text) {
     utterance.pitch = 1.0;
     window.speechSynthesis.speak(utterance);
 }
+
+// Startup Greeting
+window.addEventListener('load', () => {
+    setTimeout(() => {
+        const welcomeMsg = "Systems online, sir. How can I assist you today?";
+        addMessage('jarvis', welcomeMsg);
+        speak(welcomeMsg);
+    }, 1000);
+});
