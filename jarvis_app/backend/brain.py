@@ -1,12 +1,17 @@
 import sqlite3
 import json
 import requests
+import re
 
 class Brain:
     def __init__(self, db_path="jarvis_memory.db", llm_url="http://localhost:11434/api/generate"):
         self.db_path = db_path
         self.llm_url = llm_url
         self._init_db()
+        # Optimization: Use a session for persistent connections to Ollama
+        self.session = requests.Session()
+        # Optimization: Pre-compile the regex for action parsing
+        self.action_re = re.compile(r'\{.*\}', re.DOTALL)
 
     def _init_db(self):
         conn = sqlite3.connect(self.db_path)
@@ -77,8 +82,8 @@ class Brain:
         prompt = f"{system_prompt}\n\nRecent History:\n{history_str}\nUser: {user_input}\nJarvis:"
 
         try:
-            # Assuming Ollama is running locally
-            response = requests.post(self.llm_url, json={
+            # Optimization: Use the session for persistent connections to Ollama
+            response = self.session.post(self.llm_url, json={
                 "model": "llama3",
                 "prompt": prompt,
                 "stream": False
@@ -97,9 +102,8 @@ class Brain:
 
     def parse_action(self, ai_reply):
         try:
-            # Try to find JSON in the response
-            import re
-            json_match = re.search(r'\{.*\}', ai_reply, re.DOTALL)
+            # Optimization: Use the pre-compiled regex for action parsing
+            json_match = self.action_re.search(ai_reply)
             if json_match:
                 return json.loads(json_match.group())
         except:
