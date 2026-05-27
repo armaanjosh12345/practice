@@ -21,7 +21,8 @@ class SystemController:
         return "Clicked"
 
     def type_text(self, text):
-        pyautogui.write(text, interval=0.1)
+        # Optimization: Reduced interval for faster typing (10x speedup)
+        pyautogui.write(text, interval=0.01)
         return f"Typed: {text}"
 
     def press_key(self, key):
