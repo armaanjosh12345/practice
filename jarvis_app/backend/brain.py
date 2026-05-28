@@ -6,6 +6,8 @@ class Brain:
     def __init__(self, db_path="jarvis_memory.db", llm_url="http://localhost:11434/api/generate"):
         self.db_path = db_path
         self.llm_url = llm_url
+        # Use requests.Session for connection pooling to Ollama
+        self.session = requests.Session()
         self._init_db()
 
     def _init_db(self):
@@ -77,8 +79,8 @@ class Brain:
         prompt = f"{system_prompt}\n\nRecent History:\n{history_str}\nUser: {user_input}\nJarvis:"
 
         try:
-            # Assuming Ollama is running locally
-            response = requests.post(self.llm_url, json={
+            # Using session for connection pooling
+            response = self.session.post(self.llm_url, json={
                 "model": "llama3",
                 "prompt": prompt,
                 "stream": False
