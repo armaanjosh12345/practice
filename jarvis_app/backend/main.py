@@ -17,7 +17,7 @@ async def root():
     return {"status": "Jarvis Backend is running"}
 
 @app.post("/chat")
-async def chat(message: Message):
+def chat(message: Message):
     try:
         # Get system context
         stats = get_system_stats()
