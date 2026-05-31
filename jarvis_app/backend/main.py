@@ -16,8 +16,11 @@ class Message(BaseModel):
 async def root():
     return {"status": "Jarvis Backend is running"}
 
+# Optimization: Using synchronous 'def' instead of 'async def' for the chat endpoint.
+# Since brain.think() is a blocking I/O operation (LLM call), FastAPI will run this
+# in its internal thread pool, preventing the event loop from being blocked.
 @app.post("/chat")
-async def chat(message: Message):
+def chat(message: Message):
     try:
         # Get system context
         stats = get_system_stats()
