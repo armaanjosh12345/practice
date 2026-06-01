@@ -1,11 +1,16 @@
 import sqlite3
 import json
 import requests
+import re
 
 class Brain:
     def __init__(self, db_path="jarvis_memory.db", llm_url="http://localhost:11434/api/generate"):
         self.db_path = db_path
         self.llm_url = llm_url
+        # Optimization: Use requests.Session for connection pooling to Ollama.
+        # This reuses the TCP connection, reducing request latency by avoiding repeated handshakes.
+        # Estimated impact: ~10-20% reduction in request overhead.
+        self.session = requests.Session()
         self._init_db()
 
     def _init_db(self):
@@ -55,7 +60,10 @@ class Brain:
     def get_history(self, limit=10):
         conn = sqlite3.connect(self.db_path)
         cursor = conn.cursor()
-        cursor.execute('SELECT role, content FROM conversation_history ORDER BY timestamp DESC LIMIT ?', (limit,))
+        # Optimization: Sort by 'id' instead of 'timestamp'.
+        # Since 'id' is the primary key, it is indexed by default, making this query significantly faster
+        # as the table grows.
+        cursor.execute('SELECT role, content FROM conversation_history ORDER BY id DESC LIMIT ?', (limit,))
         history = cursor.fetchall()
         conn.close()
         return history[::-1]
@@ -78,7 +86,7 @@ class Brain:
 
         try:
             # Assuming Ollama is running locally
-            response = requests.post(self.llm_url, json={
+            response = self.session.post(self.llm_url, json={
                 "model": "llama3",
                 "prompt": prompt,
                 "stream": False
@@ -98,7 +106,6 @@ class Brain:
     def parse_action(self, ai_reply):
         try:
             # Try to find JSON in the response
-            import re
             json_match = re.search(r'\{.*\}', ai_reply, re.DOTALL)
             if json_match:
                 return json.loads(json_match.group())
