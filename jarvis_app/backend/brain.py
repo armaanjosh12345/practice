@@ -1,11 +1,15 @@
 import sqlite3
 import json
 import requests
+import re
 
 class Brain:
     def __init__(self, db_path="jarvis_memory.db", llm_url="http://localhost:11434/api/generate"):
         self.db_path = db_path
         self.llm_url = llm_url
+        # ⚡ Bolt: Use requests.Session for connection pooling to Ollama
+        # This reduces latency by reusing TCP connections.
+        self.session = requests.Session()
         self._init_db()
 
     def _init_db(self):
@@ -55,7 +59,8 @@ class Brain:
     def get_history(self, limit=10):
         conn = sqlite3.connect(self.db_path)
         cursor = conn.cursor()
-        cursor.execute('SELECT role, content FROM conversation_history ORDER BY timestamp DESC LIMIT ?', (limit,))
+        # ⚡ Bolt: Use ORDER BY id DESC which is faster as it uses the primary key index
+        cursor.execute('SELECT role, content FROM conversation_history ORDER BY id DESC LIMIT ?', (limit,))
         history = cursor.fetchall()
         conn.close()
         return history[::-1]
@@ -70,7 +75,7 @@ class Brain:
         You can move the mouse, type, and open applications.
         If the user asks for a system action, respond with a JSON object in this format:
         {"action": "move_mouse", "params": {"x": 100, "y": 200}}
-        Available actions: move_mouse, click, type, press, open_whatsapp, open_mt5.
+        Available actions: move_mouse, click, type, press, open_whatsapp, open_mt5, open_url.
         If it's just a conversation, just reply normally.
         Always be helpful and polite."""
 
@@ -78,7 +83,8 @@ class Brain:
 
         try:
             # Assuming Ollama is running locally
-            response = requests.post(self.llm_url, json={
+            # ⚡ Bolt: Use session for faster requests via connection pooling
+            response = self.session.post(self.llm_url, json={
                 "model": "llama3",
                 "prompt": prompt,
                 "stream": False
@@ -98,7 +104,6 @@ class Brain:
     def parse_action(self, ai_reply):
         try:
             # Try to find JSON in the response
-            import re
             json_match = re.search(r'\{.*\}', ai_reply, re.DOTALL)
             if json_match:
                 return json.loads(json_match.group())
