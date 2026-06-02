@@ -17,7 +17,10 @@ async def root():
     return {"status": "Jarvis Backend is running"}
 
 @app.post("/chat")
-async def chat(message: Message):
+def chat(message: Message):
+    # ⚡ Bolt: Removed 'async' to allow FastAPI to run this in its thread pool.
+    # The LLM request ('brain.think') is a blocking I/O operation.
+    # Running it in a thread pool prevents it from blocking the main event loop.
     try:
         # Get system context
         stats = get_system_stats()
