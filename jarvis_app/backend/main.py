@@ -17,7 +17,12 @@ async def root():
     return {"status": "Jarvis Backend is running"}
 
 @app.post("/chat")
-async def chat(message: Message):
+def chat(message: Message):
+    """
+    Optimized: Use synchronous 'def' instead of 'async def'.
+    FastAPI will run this blocking LLM call in a separate thread pool,
+    preventing the event loop from being blocked during the long 'think' operation.
+    """
     try:
         # Get system context
         stats = get_system_stats()
