@@ -7,9 +7,9 @@ import time
 
 class TradingBridge:
     def __init__(self, account=None, password=None, server=None):
-        self.account = account
-        self.password = password
-        self.server = server
+        self.account = account or (int(os.getenv("FBS_ACCOUNT")) if os.getenv("FBS_ACCOUNT") else None)
+        self.password = password or os.getenv("FBS_PASSWORD")
+        self.server = server or os.getenv("FBS_SERVER")
         self.connected = False
 
     def connect(self):

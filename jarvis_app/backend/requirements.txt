@@ -6,3 +6,10 @@ pydantic
 pytest
 requests
 psutil
+pandas
+pandas-ta
+numpy
+scipy
+scikit-learn
+xgboost
+joblib
