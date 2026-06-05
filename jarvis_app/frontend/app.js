@@ -29,6 +29,12 @@ async function sendMessage(text) {
         const data = await response.json();
         addMessage('jarvis', data.reply);
 
+        // Update stats if returned
+        if (data.system) {
+            document.getElementById('cpu-stat').innerText = `CPU: ${data.system.cpu_usage}`;
+            document.getElementById('ram-stat').innerText = `RAM: ${data.system.memory_usage}`;
+        }
+
         if (data.execution_result) {
             console.log('Action result:', data.execution_result);
         }
@@ -101,8 +107,26 @@ function speak(text) {
 // Startup Greeting
 window.addEventListener('load', () => {
     setTimeout(() => {
-        const welcomeMsg = "Systems online, sir. How can I assist you today?";
+        const welcomeMsg = "Quantum Sandbox systems online, sir. All neural networks initialized. Ready for command.";
         addMessage('jarvis', welcomeMsg);
         speak(welcomeMsg);
+        updateDashboard();
     }, 1000);
 });
+
+async function updateDashboard() {
+    try {
+        const response = await fetch('http://localhost:8000/');
+        const data = await response.json();
+        if (data.system) {
+            document.getElementById('cpu-stat').innerText = `CPU: ${data.system.cpu_usage}`;
+            document.getElementById('ram-stat').innerText = `RAM: ${data.system.memory_usage}`;
+        }
+        if (data.trading) {
+            document.getElementById('pnl-stat').innerText = `AVG PNL: $${data.trading.avg_pnl.toFixed(2)}`;
+        }
+    } catch (e) {
+        console.error("Failed to update dashboard", e);
+    }
+}
+setInterval(updateDashboard, 5000);

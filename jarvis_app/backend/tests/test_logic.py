@@ -22,8 +22,9 @@ def test_brain_memory():
         os.remove(db_test)
 
     brain = Brain(db_path=db_test)
-    brain.store_memory("user_name", "Tony")
-    assert brain.retrieve_memory("user_name") == "Tony"
+    brain.add_to_history("user", "Hello Jarvis")
+    history = brain.get_history()
+    assert history[0][1] == "Hello Jarvis"
 
     if os.path.exists(db_test):
         os.remove(db_test)

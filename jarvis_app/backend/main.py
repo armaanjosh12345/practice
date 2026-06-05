@@ -3,18 +3,30 @@ from pydantic import BaseModel
 from brain import Brain
 from system_controller import SystemController
 from system_info import get_system_stats
+from data_collector import DataCollector
+from trading_bridge import TradingBridge
+from memory import MemoryManager
 import uvicorn
 
 app = FastAPI()
 brain = Brain()
 controller = SystemController()
+data_collector = DataCollector()
+trading_bridge = TradingBridge()
+memory = MemoryManager()
 
 class Message(BaseModel):
     text: str
 
 @app.get("/")
 async def root():
-    return {"status": "Jarvis Backend is running"}
+    stats = get_system_stats()
+    trading_stats = memory.get_stats()
+    return {
+        "status": "Jarvis Quantum Sandbox Backend is running",
+        "system": stats,
+        "trading": trading_stats
+    }
 
 @app.post("/chat")
 async def chat(message: Message):

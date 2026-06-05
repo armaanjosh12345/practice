@@ -30,9 +30,47 @@ header {
     padding-bottom: 10px;
 }
 
-h1 {
+.logo-area h1 {
     margin: 0;
     letter-spacing: 5px;
+    font-size: 1.8em;
+}
+
+.subtitle {
+    margin: 0;
+    font-size: 0.7em;
+    letter-spacing: 3px;
+    color: #fff;
+    opacity: 0.7;
+}
+
+.status-area {
+    text-align: right;
+}
+
+#trading-status {
+    font-size: 0.7em;
+    margin-bottom: 5px;
+    color: #ff3d00;
+}
+
+.dashboard-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 15px;
+    margin-bottom: 20px;
+}
+
+.grid-item {
+    border: 1px solid rgba(0, 229, 255, 0.3);
+    padding: 10px;
+    background: rgba(0, 229, 255, 0.05);
+}
+
+.grid-item h3 {
+    margin: 0 0 10px 0;
+    font-size: 0.8em;
+    opacity: 0.8;
 }
 
 #status-indicator {

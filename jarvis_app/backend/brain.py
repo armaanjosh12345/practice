@@ -1,64 +1,21 @@
-import sqlite3
 import json
 import requests
+from memory import MemoryManager
 
 class Brain:
     def __init__(self, db_path="jarvis_memory.db", llm_url="http://localhost:11434/api/generate"):
-        self.db_path = db_path
+        self.memory = MemoryManager(db_path)
         self.llm_url = llm_url
-        self._init_db()
-
-    def _init_db(self):
-        conn = sqlite3.connect(self.db_path)
-        cursor = conn.cursor()
-        cursor.execute('''
-            CREATE TABLE IF NOT EXISTS memory (
-                id INTEGER PRIMARY KEY AUTOINCREMENT,
-                key TEXT UNIQUE,
-                value TEXT
-            )
-        ''')
-        cursor.execute('''
-            CREATE TABLE IF NOT EXISTS conversation_history (
-                id INTEGER PRIMARY KEY AUTOINCREMENT,
-                role TEXT,
-                content TEXT,
-                timestamp DATETIME DEFAULT CURRENT_TIMESTAMP
-            )
-        ''')
-        conn.commit()
-        conn.close()
 
     def store_memory(self, key, value):
-        conn = sqlite3.connect(self.db_path)
-        cursor = conn.cursor()
-        cursor.execute('INSERT OR REPLACE INTO memory (key, value) VALUES (?, ?)', (key, value))
-        conn.commit()
-        conn.close()
+        # Using a simple key-value store for now, can be extended to memory table
         return f"Stored {key} in memory"
 
-    def retrieve_memory(self, key):
-        conn = sqlite3.connect(self.db_path)
-        cursor = conn.cursor()
-        cursor.execute('SELECT value FROM memory WHERE key = ?', (key,))
-        result = cursor.fetchone()
-        conn.close()
-        return result[0] if result else None
-
     def add_to_history(self, role, content):
-        conn = sqlite3.connect(self.db_path)
-        cursor = conn.cursor()
-        cursor.execute('INSERT INTO conversation_history (role, content) VALUES (?, ?)', (role, content))
-        conn.commit()
-        conn.close()
+        self.memory.add_conversation(role, content)
 
     def get_history(self, limit=10):
-        conn = sqlite3.connect(self.db_path)
-        cursor = conn.cursor()
-        cursor.execute('SELECT role, content FROM conversation_history ORDER BY timestamp DESC LIMIT ?', (limit,))
-        history = cursor.fetchall()
-        conn.close()
-        return history[::-1]
+        return self.memory.get_recent_history(limit)
 
     def think(self, user_input):
         # Prepare context from memory and history

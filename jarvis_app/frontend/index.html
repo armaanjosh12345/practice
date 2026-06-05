@@ -3,15 +3,34 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>JARVIS - System Control</title>
+    <title>QUANTUM SANDBOX - AI Trading Command Center</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
     <div class="container">
         <header>
-            <h1>JARVIS</h1>
-            <div id="status-indicator" class="online">SYSTEM ONLINE</div>
+            <div class="logo-area">
+                <h1>QUANTUM SANDBOX</h1>
+                <p class="subtitle">AI TRADING COMMAND CENTER</p>
+            </div>
+            <div class="status-area">
+                <div id="trading-status">TRADING: INACTIVE</div>
+                <div id="status-indicator" class="online">SYSTEM ONLINE</div>
+            </div>
         </header>
+
+        <div class="dashboard-grid">
+            <div class="grid-item stats">
+                <h3>SYSTEM PERFORMANCE</h3>
+                <div id="cpu-stat">CPU: 0%</div>
+                <div id="ram-stat">RAM: 0%</div>
+                <div id="pnl-stat">PNL: $0.00</div>
+            </div>
+            <div class="grid-item memory">
+                <h3>CORE MEMORY</h3>
+                <div id="memory-stats">Knowledge Base: Growing...</div>
+            </div>
+        </div>
 
         <main id="chat-container">
             <div id="chat-history"></div>
