@@ -41,3 +41,17 @@ def test_system_controller_execute_command():
         result = sc.execute_command("open_whatsapp", {})
         mock_method.assert_called_once()
         assert result == "Opening WhatsApp"
+
+def test_system_controller_open_url():
+    sc = SystemController()
+    with patch('webbrowser.open') as mock_open:
+        result = sc.open_url("https://google.com")
+        mock_open.assert_called_once_with("https://google.com")
+        assert "Opening URL: https://google.com" in result
+
+def test_system_controller_execute_open_url():
+    sc = SystemController()
+    with patch.object(sc, 'open_url', return_value="Opening URL: https://google.com") as mock_method:
+        result = sc.execute_command("open_url", {"url": "https://google.com"})
+        mock_method.assert_called_once_with("https://google.com")
+        assert result == "Opening URL: https://google.com"

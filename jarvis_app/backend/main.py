@@ -9,6 +9,7 @@ from memory import MemoryManager
 import uvicorn
 
 app = FastAPI()
+# Singletons for resource reuse (Brain uses requests.Session)
 brain = Brain()
 controller = SystemController()
 data_collector = DataCollector()
@@ -29,7 +30,14 @@ async def root():
     }
 
 @app.post("/chat")
-async def chat(message: Message):
+def chat(message: Message):
+    """
+    Optimization: Using synchronous 'def' instead of 'async def'.
+    Since LLM processing is high-latency and blocking (CPU-bound/IO-bound),
+    FastAPI will run this in an external thread pool, preventing the
+    event loop from being blocked and allowing other requests (like /)
+    to remain responsive.
+    """
     try:
         # Get system context
         stats = get_system_stats()
