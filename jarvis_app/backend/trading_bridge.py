@@ -4,6 +4,7 @@ except ImportError:
     mt5 = None
 import pandas as pd
 import time
+import os
 
 class TradingBridge:
     def __init__(self, account=None, password=None, server=None):
