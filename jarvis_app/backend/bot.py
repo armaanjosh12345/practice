@@ -45,7 +45,20 @@ class AutonomousBot:
         # 7. Execute Trade (if confidence > 72%)
         if recommendation != "WAIT" and recommendation != "AVOID" and confidence > 0.72:
             print(f"Executing {recommendation} on XAUUSD...")
-            # actual trade execution call would go here
+
+            # Map recommendation string to MT5 order type
+            import MetaTrader5 as mt5
+            order_type = mt5.ORDER_TYPE_BUY if recommendation == "BUY" else mt5.ORDER_TYPE_SELL
+
+            # Execute actual trade
+            exec_result = self.trading_bridge.place_order(
+                symbol="XAUUSD",
+                order_type=order_type,
+                volume=0.01,
+                price=df.iloc[-1]['close']
+            )
+            print(f"Execution Result: {exec_result}")
+
             self.memory.log_trade("XAUUSD", recommendation, df.iloc[-1]['close'], regime, confidence)
 
         print("--- Trading Cycle Finished ---")

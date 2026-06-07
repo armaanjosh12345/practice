@@ -8,10 +8,14 @@ class LearningPipeline:
         self.db_path = db_path
         self.brain = EnsembleBrain()
 
-    def fetch_training_data(self):
-        # In a real scenario, this would load historical data from a CSV or DB
-        # For now, we return a mock structure
-        pass
+    def fetch_training_data(self, symbol="XAUUSD", bars=1000):
+        # Fetches historical data from MT5 for retraining
+        from trading_bridge import TradingBridge
+        bridge = TradingBridge()
+        bridge.connect()
+        df = bridge.get_market_data(symbol, bars=bars)
+        bridge.shutdown()
+        return df
 
     def perform_nightly_retrain(self, historical_df):
         print("Starting Nightly Retraining...")
