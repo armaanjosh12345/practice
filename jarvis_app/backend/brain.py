@@ -6,6 +6,9 @@ class Brain:
     def __init__(self, db_path="jarvis_memory.db", llm_url="http://localhost:11434/api/generate"):
         self.memory = MemoryManager(db_path)
         self.llm_url = llm_url
+        # ⚡ Bolt: Use requests.Session for connection pooling to Ollama.
+        # This reduces latency by reusing existing TCP connections (avoiding handshake overhead).
+        self.session = requests.Session()
 
     def store_memory(self, key, value):
         # Using a simple key-value store for now, can be extended to memory table
@@ -35,7 +38,8 @@ class Brain:
 
         try:
             # Assuming Ollama is running locally
-            response = requests.post(self.llm_url, json={
+            # ⚡ Bolt: Using session.post instead of requests.post for connection pooling.
+            response = self.session.post(self.llm_url, json={
                 "model": "llama3",
                 "prompt": prompt,
                 "stream": False

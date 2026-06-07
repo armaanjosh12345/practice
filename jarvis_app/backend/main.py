@@ -28,8 +28,12 @@ async def root():
         "trading": trading_stats
     }
 
+# ⚡ Bolt: Changed /chat from 'async def' to 'def'.
+# Since brain.think() is a blocking I/O operation (Ollama call),
+# using 'def' tells FastAPI to run it in a thread pool, preventing it from
+# blocking the main event loop and improving overall application responsiveness.
 @app.post("/chat")
-async def chat(message: Message):
+def chat(message: Message):
     try:
         # Get system context
         stats = get_system_stats()
