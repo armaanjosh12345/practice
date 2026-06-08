@@ -29,7 +29,11 @@ async def root():
     }
 
 @app.post("/chat")
-async def chat(message: Message):
+def chat(message: Message):
+    # ⚡ Bolt: Using def instead of async def for the chat endpoint.
+    # Since brain.think() is a synchronous, high-latency operation (LLM inference),
+    # async def would block the entire FastAPI event loop.
+    # Standard def tells FastAPI to run this in its internal thread pool.
     try:
         # Get system context
         stats = get_system_stats()
