@@ -29,7 +29,12 @@ async def root():
     }
 
 @app.post("/chat")
-async def chat(message: Message):
+def chat(message: Message):
+    """
+    Optimized to use synchronous 'def' instead of 'async def'.
+    Since brain.think() performs blocking HTTP requests (Ollama),
+    FastAPI will run this in a separate thread pool to avoid blocking the main event loop.
+    """
     try:
         # Get system context
         stats = get_system_stats()
