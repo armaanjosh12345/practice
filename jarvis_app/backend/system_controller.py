@@ -2,6 +2,7 @@ import pyautogui
 import subprocess
 import platform
 import os
+import webbrowser
 
 class SystemController:
     def __init__(self):
@@ -48,6 +49,13 @@ class SystemController:
         # This is a simplification; actual path depends on installation
         return self.open_application("metatrader5")
 
+    def open_browser(self, url):
+        try:
+            webbrowser.open(url)
+            return f"Opened browser to {url}"
+        except Exception as e:
+            return f"Error opening browser: {str(e)}"
+
     def get_screen_size(self):
         width, height = pyautogui.size()
         return {"width": width, "height": height}
@@ -65,5 +73,7 @@ class SystemController:
             return self.open_whatsapp()
         elif action == "open_mt5":
             return self.open_mt5()
+        elif action == "open_browser":
+            return self.open_browser(params.get("url"))
         else:
             return "Unknown action"
