@@ -19,7 +19,8 @@ class Message(BaseModel):
     text: str
 
 @app.get("/")
-async def root():
+def root():
+    # Optimization: Changed to sync def to allow FastAPI to run in thread pool
     stats = get_system_stats()
     trading_stats = memory.get_stats()
     return {
@@ -29,7 +30,8 @@ async def root():
     }
 
 @app.post("/chat")
-async def chat(message: Message):
+def chat(message: Message):
+    # Optimization: Changed to sync def to prevent blocking event loop during LLM call
     try:
         # Get system context
         stats = get_system_stats()
