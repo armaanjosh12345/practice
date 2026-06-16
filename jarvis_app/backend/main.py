@@ -19,7 +19,10 @@ class Message(BaseModel):
     text: str
 
 @app.get("/")
-async def root():
+def root():
+    # Optimization: Changed from 'async def' to 'def' because this endpoint
+    # performs blocking I/O (system stats, database queries).
+    # This allows FastAPI to run it in a thread pool, preventing event loop blockage.
     stats = get_system_stats()
     trading_stats = memory.get_stats()
     return {
@@ -29,7 +32,9 @@ async def root():
     }
 
 @app.post("/chat")
-async def chat(message: Message):
+def chat(message: Message):
+    # Optimization: Changed from 'async def' to 'def' to avoid blocking the event loop
+    # during long-running LLM requests and blocking database/system calls.
     try:
         # Get system context
         stats = get_system_stats()

@@ -107,9 +107,11 @@ class MemoryManager:
         conn.close()
 
     def get_recent_history(self, limit=10):
+        # Optimization: Sorting by 'id' (INTEGER PRIMARY KEY) is significantly faster
+        # than sorting by a non-indexed DATETIME column like 'timestamp' in SQLite.
         conn = sqlite3.connect(self.db_path)
         cursor = conn.cursor()
-        cursor.execute('SELECT role, content FROM conversation_history ORDER BY timestamp DESC LIMIT ?', (limit,))
+        cursor.execute('SELECT role, content FROM conversation_history ORDER BY id DESC LIMIT ?', (limit,))
         history = cursor.fetchall()
         conn.close()
         return history[::-1]
