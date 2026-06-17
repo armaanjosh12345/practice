@@ -19,7 +19,9 @@ class Message(BaseModel):
     text: str
 
 @app.get("/")
-async def root():
+def root():
+    # Performance: Using 'def' instead of 'async def' allows FastAPI to use its
+    # internal thread pool for blocking I/O (system stats, SQLite).
     stats = get_system_stats()
     trading_stats = memory.get_stats()
     return {
@@ -29,7 +31,9 @@ async def root():
     }
 
 @app.post("/chat")
-async def chat(message: Message):
+def chat(message: Message):
+    # Performance: Using 'def' instead of 'async def' allows FastAPI to use its
+    # internal thread pool for blocking I/O (LLM requests, system stats, SQLite).
     try:
         # Get system context
         stats = get_system_stats()

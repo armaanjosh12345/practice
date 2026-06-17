@@ -1,0 +1,3 @@
+## 2025-05-14 - FastAPI Concurrency & Connection Pooling
+**Learning:** Using `async def` with blocking I/O (requests, psutil, pyautogui) in FastAPI blocks the event loop, degrading performance. Using standard `def` allows FastAPI to delegate the work to its internal thread pool. Additionally, `requests.Session()` significantly reduces latency for frequent API calls by reusing TCP connections. Sorting SQLite results by `INTEGER PRIMARY KEY` (e.g., `id`) is significantly more efficient than sorting by `DATETIME` columns.
+**Action:** Use `def` for blocking FastAPI endpoints, implement connection pooling for repeated HTTP calls, and prioritize primary key indexing for database sorting.
