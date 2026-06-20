@@ -29,7 +29,7 @@ async def root():
     }
 
 @app.post("/chat")
-async def chat(message: Message):
+def chat(message: Message):
     try:
         # Get system context
         stats = get_system_stats()

@@ -1,11 +1,14 @@
 import json
 import requests
+import re
 from memory import MemoryManager
 
 class Brain:
     def __init__(self, db_path="jarvis_memory.db", llm_url="http://localhost:11434/api/generate"):
         self.memory = MemoryManager(db_path)
         self.llm_url = llm_url
+        # Optimization: Reuse TCP connections for repeated requests to local LLM
+        self.session = requests.Session()
 
     def store_memory(self, key, value):
         # Using a simple key-value store for now, can be extended to memory table
@@ -27,15 +30,16 @@ class Brain:
         You can move the mouse, type, and open applications.
         If the user asks for a system action, respond with a JSON object in this format:
         {"action": "move_mouse", "params": {"x": 100, "y": 200}}
-        Available actions: move_mouse, click, type, press, open_whatsapp, open_mt5.
+        Available actions: move_mouse, click, type, press, open_whatsapp, open_mt5, open_url.
+        Example for internet access: {"action": "open_url", "params": {"url": "https://www.google.com"}}
         If it's just a conversation, just reply normally.
         Always be helpful and polite."""
 
         prompt = f"{system_prompt}\n\nRecent History:\n{history_str}\nUser: {user_input}\nJarvis:"
 
         try:
-            # Assuming Ollama is running locally
-            response = requests.post(self.llm_url, json={
+            # Optimization: Use connection pooling via requests.Session
+            response = self.session.post(self.llm_url, json={
                 "model": "llama3",
                 "prompt": prompt,
                 "stream": False
@@ -55,7 +59,6 @@ class Brain:
     def parse_action(self, ai_reply):
         try:
             # Try to find JSON in the response
-            import re
             json_match = re.search(r'\{.*\}', ai_reply, re.DOTALL)
             if json_match:
                 return json.loads(json_match.group())
