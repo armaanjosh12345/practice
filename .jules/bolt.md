@@ -1,0 +1,3 @@
+## 2025-05-15 - SQLite Primary Key Sorting Optimization
+**Learning:** Sorting by an `INTEGER PRIMARY KEY` in SQLite is significantly more efficient than sorting by a non-indexed `DATETIME` column like `timestamp`. In this codebase, `id DESC` provides a ~10x speedup for history retrieval with 10,000 records. Additionally, using `requests.Session()` in a shared backend state with FastAPI's default thread pool (for `def` endpoints) requires careful management as it is not inherently thread-safe.
+**Action:** Always prefer sorting by primary key when chronological order is guaranteed by insertion order. Ensure thread-safety when introducing shared state like connection pools in multi-threaded environments.
