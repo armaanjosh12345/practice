@@ -1,5 +1,6 @@
 import json
 import requests
+import re
 from memory import MemoryManager
 
 class Brain:
@@ -55,7 +56,6 @@ class Brain:
     def parse_action(self, ai_reply):
         try:
             # Try to find JSON in the response
-            import re
             json_match = re.search(r'\{.*\}', ai_reply, re.DOTALL)
             if json_match:
                 return json.loads(json_match.group())
