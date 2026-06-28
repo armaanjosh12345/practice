@@ -109,7 +109,9 @@ class MemoryManager:
     def get_recent_history(self, limit=10):
         conn = sqlite3.connect(self.db_path)
         cursor = conn.cursor()
-        cursor.execute('SELECT role, content FROM conversation_history ORDER BY timestamp DESC LIMIT ?', (limit,))
+        # Optimization: ORDER BY id DESC is significantly faster than ORDER BY timestamp DESC
+        # because it leverages the primary key index.
+        cursor.execute('SELECT role, content FROM conversation_history ORDER BY id DESC LIMIT ?', (limit,))
         history = cursor.fetchall()
         conn.close()
         return history[::-1]
