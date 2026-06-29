@@ -84,6 +84,9 @@ class MemoryManager:
             )
         ''')
 
+        # Optimize trade_log queries with an index on status
+        cursor.execute('CREATE INDEX IF NOT EXISTS idx_trade_log_status ON trade_log (status)')
+
         conn.commit()
         conn.close()
 
@@ -109,7 +112,9 @@ class MemoryManager:
     def get_recent_history(self, limit=10):
         conn = sqlite3.connect(self.db_path)
         cursor = conn.cursor()
-        cursor.execute('SELECT role, content FROM conversation_history ORDER BY timestamp DESC LIMIT ?', (limit,))
+        # Optimized: Sorting by INTEGER PRIMARY KEY (id) is significantly faster than DATETIME (timestamp)
+        # in SQLite as it leverages the automatic primary key index.
+        cursor.execute('SELECT role, content FROM conversation_history ORDER BY id DESC LIMIT ?', (limit,))
         history = cursor.fetchall()
         conn.close()
         return history[::-1]
