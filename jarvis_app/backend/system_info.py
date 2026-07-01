@@ -1,12 +1,16 @@
 import psutil
 import platform
 
+# Optimization: Cache static system info to avoid redundant system calls
+SYSTEM = platform.system()
+SYSTEM_VERSION = platform.version()
+
 def get_system_stats():
     stats = {
         "cpu_usage": f"{psutil.cpu_percent()}%",
         "memory_usage": f"{psutil.virtual_memory().percent}%",
-        "platform": platform.system(),
-        "platform_version": platform.version(),
+        "platform": SYSTEM,
+        "platform_version": SYSTEM_VERSION,
     }
 
     battery = psutil.sensors_battery()
