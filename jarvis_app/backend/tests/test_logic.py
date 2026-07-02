@@ -41,3 +41,10 @@ def test_system_controller_execute_command():
         result = sc.execute_command("open_whatsapp", {})
         mock_method.assert_called_once()
         assert result == "Opening WhatsApp"
+
+def test_system_controller_browse():
+    sc = SystemController()
+    with patch('subprocess.Popen') as mock_popen:
+        result = sc.execute_command("browse", {"url": "https://example.com"})
+        assert "Opening browser to https://example.com" in result
+        mock_popen.assert_called_once()
