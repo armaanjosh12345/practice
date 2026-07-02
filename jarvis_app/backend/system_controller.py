@@ -48,6 +48,15 @@ class SystemController:
         # This is a simplification; actual path depends on installation
         return self.open_application("metatrader5")
 
+    def open_browser(self, url="https://google.com"):
+        if platform.system() == "Windows":
+            subprocess.Popen(["cmd", "/c", "start", url], shell=True)
+        elif platform.system() == "Darwin":
+            subprocess.Popen(["open", url])
+        else:
+            subprocess.Popen(["xdg-open", url])
+        return f"Opening browser to {url}"
+
     def get_screen_size(self):
         width, height = pyautogui.size()
         return {"width": width, "height": height}
@@ -65,5 +74,7 @@ class SystemController:
             return self.open_whatsapp()
         elif action == "open_mt5":
             return self.open_mt5()
+        elif action == "browse":
+            return self.open_browser(params.get("url", "https://google.com"))
         else:
             return "Unknown action"
