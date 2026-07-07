@@ -48,6 +48,19 @@ class SystemController:
         # This is a simplification; actual path depends on installation
         return self.open_application("metatrader5")
 
+    def browse(self, url):
+        """
+        Opens a URL in the default web browser.
+        This provides Jarvis with autonomous internet access.
+        """
+        import webbrowser
+        try:
+            # Using webbrowser module is safer and more cross-platform than shell commands
+            webbrowser.open(url)
+            return f"Opened browser to {url}"
+        except Exception as e:
+            return f"Error opening browser: {str(e)}"
+
     def get_screen_size(self):
         width, height = pyautogui.size()
         return {"width": width, "height": height}
@@ -65,5 +78,7 @@ class SystemController:
             return self.open_whatsapp()
         elif action == "open_mt5":
             return self.open_mt5()
+        elif action == "browse":
+            return self.browse(params.get("url"))
         else:
             return "Unknown action"
