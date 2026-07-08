@@ -2,15 +2,18 @@ import pyautogui
 import subprocess
 import platform
 import os
+import webbrowser
 
 class SystemController:
     def __init__(self):
         # Disable fail-safe if needed, but it's safer to keep it on
         # pyautogui.FAILSAFE = True
-        pass
+        # Optimization: Reduce default pause between pyautogui commands for snappier response
+        pyautogui.PAUSE = 0.05
 
     def move_mouse(self, x, y):
-        pyautogui.moveTo(x, y, duration=0.25)
+        # Optimization: Faster mouse move (0.1s instead of 0.25s)
+        pyautogui.moveTo(x, y, duration=0.1)
         return f"Moved mouse to {x}, {y}"
 
     def click(self, x=None, y=None):
@@ -21,7 +24,8 @@ class SystemController:
         return "Clicked"
 
     def type_text(self, text):
-        pyautogui.write(text, interval=0.1)
+        # Optimization: Faster typing (0.01s interval instead of 0.1s)
+        pyautogui.write(text, interval=0.01)
         return f"Typed: {text}"
 
     def press_key(self, key):
@@ -52,6 +56,13 @@ class SystemController:
         width, height = pyautogui.size()
         return {"width": width, "height": height}
 
+    def browse(self, url):
+        try:
+            webbrowser.open(url)
+            return f"Opened browser to {url}"
+        except Exception as e:
+            return f"Error opening browser: {str(e)}"
+
     def execute_command(self, action, params):
         if action == "move_mouse":
             return self.move_mouse(params.get("x"), params.get("y"))
@@ -65,5 +76,7 @@ class SystemController:
             return self.open_whatsapp()
         elif action == "open_mt5":
             return self.open_mt5()
+        elif action == "browse":
+            return self.browse(params.get("url"))
         else:
             return "Unknown action"
