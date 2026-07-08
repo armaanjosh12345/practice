@@ -13,7 +13,7 @@ def test_system_controller_move_mouse():
     import pyautogui
     sc = SystemController()
     result = sc.move_mouse(100, 200)
-    pyautogui.moveTo.assert_called_with(100, 200, duration=0.25)
+    pyautogui.moveTo.assert_called_with(100, 200, duration=0.1)
     assert "Moved mouse to 100, 200" in result
 
 def test_brain_memory():
